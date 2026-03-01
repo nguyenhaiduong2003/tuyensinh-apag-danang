@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Thông Tin Tuyển Sinh - APAG Đà Nẵng</title>
+    <link rel="icon" href="https://i.imgur.com/1QRiVRz.png" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* === BIẾN MÀU CHỦ ĐẠO & CƠ BẢN === */
+        :root {
+            --red-apag: #E31B23;
+            --blue-apag: #004B87;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--light-bg); color: var(--text-main); line-height: 1.6; }
+
+        /* === HEADER === */
+        header { background-color: var(--white); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000; }
+        .top-bar { background-color: var(--blue-apag); color: var(--white); padding: 5px 0; font-size: 13px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .top-bar .container { display: flex; justify-content: space-between; align-items: center; }
+        .top-contact a { color: var(--white); text-decoration: none; margin-left: 15px; }
+        
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-area img { height: 60px; }
+        .logo-text h1 { color: var(--red-apag); font-size: 20px; font-weight: 700; text-transform: uppercase; line-height: 1.2;}
+        .logo-text p { color: var(--blue-apag); font-size: 14px; font-weight: 600; text-transform: uppercase; }
+
+        /* === NAVIGATION TABS === */
+        nav { display: flex; gap: 20px; }
+        .nav-btn { background: none; border: none; font-size: 15px; font-weight: 600; color: var(--text-main); cursor: pointer; padding: 10px 15px; border-radius: var(--border-radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { background-color: #f0f4f8; color: var(--blue-apag); }
+        .nav-btn.active { background-color: var(--blue-apag); color: var(--white); }
+
+        /* === MAIN CONTENT === */
+        main { padding: 40px 0; min-height: 60vh; }
+        .section-tab { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .section-tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow-md); padding: 30px; margin-bottom: 30px; border-top: 4px solid var(--blue-apag); }
+        .card-header { text-align: center; margin-bottom: 30px; }
+        .card-header h2 { color: var(--blue-apag); font-size: 24px; text-transform: uppercase; margin-bottom: 10px; }
+        .card-header p { color: var(--text-muted); }
+
+        /* === FORMS & INPUTS === */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: 600; font-size: 14px; color: var(--text-main); }
+        .form-group label span.req { color: var(--red-apag); }
+        .form-control { padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 14px; transition: var(--transition); outline: none; }
+        .form-control:focus { border-color: var(--blue-apag); box-shadow: 0 0 0 3px rgba(0, 75, 135, 0.1); }
+        select.form-control { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 15px; }
+
+        .btn-primary { background-color: var(--blue-apag); color: var(--white); border: none; padding: 12px 30px; font-size: 16px; font-weight: 600; border-radius: 5px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; }
+        .btn-primary:hover { background-color: #00386b; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .btn-search { background-color: var(--red-apag); }
+        .btn-search:hover { background-color: #c0151c; }
+
+        /* === KẾT QUẢ TRA CỨU UI (Giống ảnh 2) === */
+        .result-box { margin-top: 30px; display: none; }
+        .candidate-profile { border: 2px solid var(--blue-apag); border-radius: 12px; overflow: hidden; }
+        .profile-header { text-align: center; padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .profile-header h3 { color: var(--blue-apag); font-size: 22px; text-transform: uppercase; margin: 0; }
+        .profile-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 15px; }
+        .profile-item span.label { font-weight: 600; color: var(--blue-apag); }
+        
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 20px; }
+        .styled-table { width: 100%; border-collapse: collapse; text-align: center; }
+        .styled-table th { background-color: #0066cc; color: white; padding: 12px; font-weight: 600; }
+        .styled-table td { padding: 12px; border: 1px solid var(--border-color); }
+        .styled-table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .loading-spinner { display: none; text-align: center; margin: 20px 0; color: var(--blue-apag); font-size: 24px; }
+        .alert { padding: 15px; border-radius: 5px; margin-bottom: 20px; display: none; font-weight: 600; }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* === FOOTER === */
+        footer { background-color: var(--blue-apag); color: var(--white); padding: 50px 0 20px; margin-top: 40px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 30px; }
+        .footer-col h4 { font-size: 18px; margin-bottom: 20px; text-transform: uppercase; position: relative; padding-bottom: 10px; }
+        .footer-col h4::after { content: ''; position: absolute; left: 0; bottom: 0; width: 50px; height: 3px; background-color: var(--red-apag); }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+        .footer-col ul li i { margin-top: 4px; color: var(--red-apag); }
+        .social-links { display: flex; gap: 15px; margin-top: 15px; }
+        .social-links a { display: inline-flex; width: 40px; height: 40px; background-color: rgba(255,255,255,0.1); border-radius: 50%; align-items: center; justify-content: center; color: var(--white); text-decoration: none; transition: var(--transition); }
+        .social-links a:hover { background-color: var(--red-apag); }
+        .copyright { text-align: center; font-size: 14px; opacity: 0.8; }
+
+        @media (max-width: 992px) {
+            .main-header { flex-direction: column; gap: 20px; text-align: center; }
+            nav { flex-wrap: wrap; justify-content: center; }
+            .profile-body { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="container">
+            <div><i class="fas fa-bullhorn"></i> Cổng thông tin tuyển sinh chính thức năm 2026</div>
+            <div class="top-contact">
+                <a href="tel:19009010"><i class="fas fa-phone-alt"></i> 1900.9010</a>
+                <a href="mailto:tuyensinh.danang@apag.edu.vn"><i class="fas fa-envelope"></i> tuyensinh.danang@apag.edu.vn</a>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="main-header">
+                <div class="logo-area">
+                    <img src="https://i.imgur.com/1QRiVRz.png" alt="Logo APAG Đà Nẵng">
+                    <div class="logo-text">
+                        <h1>PHÂN HIỆU HỌC VIỆN HÀNH CHÍNH VÀ QUẢN TRỊ CÔNG</h1>
+                        <p>TẠI THÀNH PHỐ ĐÀ NẴNG</p>
+                    </div>
+                </div>
+                <nav>
+                    <button class="nav-btn active" onclick="switchTab('tracuu')"><i class="fas fa-search"></i> Tra cứu hồ sơ</button>
+                    <button class="nav-btn" onclick="switchTab('nop-hoso')"><i class="fas fa-file-signature"></i> Đăng ký xét tuyển</button>
+                    <button class="nav-btn" onclick="switchTab('tinh-diem')"><i class="fas fa-calculator"></i> Tính điểm ĐH</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section id="tracuu" class="section-tab active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Tra Cứu Trạng Thái Hồ Sơ</h2>
+                    <p>Nhập số CCCD/CMND để kiểm tra tiến độ xử lý hồ sơ xét tuyển của bạn</p>
+                </div>
+                
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <div class="form-group" style="flex-direction: row;">
+                        <input type="text" id="searchCccd" class="form-control" placeholder="Nhập số CMND/CCCD của bạn..." style="flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                        <button class="btn-primary btn-search" onclick="traCuuHoSo()" style="width: auto; border-top-left-radius: 0; border-bottom-left-radius: 0;"><i class="fas fa-search"></i> Tra Cứu</button>
+                    </div>
+                </div>
+
+                <div id="searchLoading" class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Đang tải dữ liệu...</div>
+                <div id="searchAlert" class="alert mt-3" style="margin-top:20px;"></div>
+
+                <div id="searchResult" class="result-box">
+                    <div class="candidate-profile">
+                        <div class="profile-header">
+                            <h3 id="resName">NGUYỄN VĂN A</h3>
+                        </div>
+                        <div class="profile-body">
+                            <div class="profile-item"><span class="label">Số CCCD:</span> <span id="resCccd"></span></div>
+                            <div class="profile-item"><span class="label">Ngày sinh:</span> <span id="resDoB"></span></div>
+                            <div class="profile-item"><span class="label">Nơi sinh:</span> <span id="resPoB"></span></div>
+                            <div class="profile-item"><span class="label">Điện thoại:</span> <span id="resPhone"></span></div>
+                            <div class="profile-item"><span class="label">Email nhận giấy báo:</span> <span id="resEmail"></span></div>
+                            <div class="profile-item"><span class="label">Năm tốt nghiệp:</span> <span id="resGrad"></span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Nguyện vọng</th>
+                                    <th>Ngành/Chuyên ngành dự tuyển</th>
+                                    <th>Mã tổ hợp môn</th>
+                                    <th>Tổng điểm xét tuyển</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="nop-hoso" class="section-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Biểu mẫu Đăng ký Xét tuyển Trực tuyến</h2>
+                    <p>Vui lòng điền thông tin chính xác. Hệ thống sẽ gửi email xác nhận ngay sau khi hoàn tất.</p>
+                </div>
+                
+                <form id="formNopHoSo" onsubmit="submitHoSo(event)">
+                    <h4 style="color: var(--blue-apag); margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">I. Thông tin Thí sinh</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Họ và tên thí sinh <span class="req">*</span></label>
+                            <input type="text" id="hoTen" class="form-control" required placeholder="Viết hoa có dấu (VD: NGUYỄN VĂN A)">
+                        </div>
+                        <div class="form-group">
+                            <label>Số CMND/CCCD <span class="req">*</span></label>
+                            <input type="text" id="cccd" class="form-control" required placeholder="Nhập đủ 12 số">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày sinh <span class="req">*</span></label>
+                            <input type="date" id="ngaySinh" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Giới tính <span class="req">*</span></label>
+                            <select id="gioiTinh" class="form-control" required>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nơi sinh (Tỉnh/TP) <span class="req">*</span></label>
+                            <input type="text" id="noiSinh" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Năm tốt nghiệp THPT <span class="req">*</span></label>
+                            <input type="number" id="namTotNghiep" class="form-control" required min="2020" max="2026" value="2026">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--blue-apag); margin: 25px 0 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">II. Thông tin Liên hệ</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Số điện thoại (Zalo) <span class="req">*</span></label>
+                            <input type="text" id="dienThoai" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email cá nhân (Nhận thông báo) <span class="req">*</span></label>
+                            <input type="email" id="email" class="form-control" required placeholder="vidu@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Khu vực ưu tiên</label>
+                            <select id="khuVuc" class="form-control">
+                                <option value="KV3">KV3</option>
+                                <option value="KV2">KV2</option>
+                                <option value="KV2-NT">KV2-NT</option>
+                                <option value="KV1">KV1</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--blue-apag); margin: 25px 0 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">III. Thông tin Đăng ký Xét tuyển</h4>
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Phương thức xét tuyển <span class="req">*</span></label>
+                            <select id="phuongThucXetTuyen" class="form-control" required>
+                                <option value="Xét kết quả học tập THPT (Học bạ)">Xét kết quả học tập THPT (Học bạ)</option>
+                                <option value="Xét kết quả thi tốt nghiệp THPT năm 2026">Xét kết quả thi tốt nghiệp THPT năm 2026</option>
+                                <option value="Xét tuyển thẳng">Xét tuyển thẳng (QĐ Bộ GD&ĐT)</option>
+                                <option value="Xét tuyển kết hợp">Xét tuyển kết hợp (CC Ngoại ngữ/ĐGNL + Học bạ)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Thứ tự nguyện vọng <span class="req">*</span></label>
+                            <input type="number" id="thuTuNguyenVong" class="form-control" required min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngành dự tuyển <span class="req">*</span></label>
+                            <select id="tenNganh" class="form-control" required>
+                                <option value="Luật">Luật</option>
+                                <option value="Chuyên ngành Thanh tra">Chuyên ngành Thanh tra (Ngành Luật)</option>
+                                <option value="Quản lý nhà nước">Quản lý nhà nước</option>
+                                <option value="Quản trị nhân lực">Quản trị nhân lực</option>
+                                <option value="Quản trị văn phòng">Quản trị văn phòng</option>
+                                <option value="Kinh tế">Kinh tế</option>
+                                <option value="Quản trị dịch vụ du lịch và lữ hành">Quản trị dịch vụ du lịch và lữ hành</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tổ hợp xét tuyển <span class="req">*</span></label>
+                            <select id="toHop" class="form-control" required>
+                                <option value="A00">A00 (Toán, Lý, Hóa)</option>
+                                <option value="C00">C00 (Văn, Sử, Địa)</option>
+                                <option value="C14">C14 (Văn, Toán, GDCD)</option>
+                                <option value="C20">C20 (Văn, Địa, GDCD)</option>
+                                <option value="D01">D01 (Toán, Văn, Anh)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng điểm xét tuyển</label>
+                            <input type="number" step="0.01" id="tongDiem" class="form-control" placeholder="Để trống nếu chưa có điểm">
+                        </div>
+                    </div>
+
+                    <div id="submitAlert" class="alert mt-3"></div>
+                    
+                    <button type="submit" id="btnSubmitForm" class="btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-paper-plane"></i> XÁC NHẬN NỘP HỒ SƠ
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="tinh-diem" class="section-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Công Cụ Hỗ Trợ Tuyển Sinh</h2>
+                    <p>Các công cụ tính điểm sẽ được tích hợp đầy đủ tại đây</p>
+                </div>
+                <div style="text-align: center; padding: 40px; border: 2px dashed var(--border-color); border-radius: 10px; background: #fafafa;">
+                    <i class="fas fa-tools" style="font-size: 50px; color: var(--border-color); margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--text-muted);">Tính năng đang được chuẩn hóa giao diện UI/UX</h3>
+                    <p style="color: #999;">Bao gồm: Tính điểm xét học bạ, Dự đoán điểm chuẩn, Tra cứu trường THPT.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="https://i.imgur.com/1QRiVRz.png" alt="Logo APAG" style="height: 50px; filter: brightness(0) invert(1); margin-bottom: 15px;">
+                    <p style="font-size: 14px; opacity: 0.9;">Môi trường đào tạo nguồn nhân lực chất lượng cao, đáp ứng yêu cầu công nghiệp hóa, hiện đại hóa và hội nhập quốc tế.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Liên hệ Tuyển sinh</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 749 Trần Hưng Đạo, phường Điện Bàn Đông, TP. Đà Nẵng</li>
+                        <li><i class="fas fa-phone-alt"></i> Hotline: 1900.9010</li>
+                        <li><i class="fas fa-comment-dots"></i> Zalo: 0867.565.468 - 0867.570.468</li>
+                        <li><i class="fas fa-envelope"></i> tuyensinh.danang@apag.edu.vn</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Kết nối với chúng tôi</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HVHCQTC.PHDN" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.youtube.com/@apagdanang" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.tiktok.com/@apag_danang" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://apag.edu.vn" target="_blank"><i class="fas fa-globe"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 Phân hiệu Học viện Hành chính và Quản trị công tại TP. Đà Nẵng. Hệ thống nội bộ hỗ trợ công tác truyền thông tuyển sinh.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // LINK APP SCRIPT CỦA BẠN (Cần cập nhật link sau khi thêm hàm doPost ở Phần 1)
+        const GOOGLE_API_URL = 'https://script.google.com/macros/s/AKfycbyHKHsNWFLhgPIsaasi24_0rv6ozsNbSQvrabkM13pHiTfe3W7Z179_wkK4YBtwseok/exec';
+
+        // Hàm chuyển đổi các Tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Hàm Tra cứu Hồ sơ
+        function traCuuHoSo() {
+            const cccd = document.getElementById('searchCccd').value.trim();
+            const alertBox = document.getElementById('searchAlert');
+            const loading = document.getElementById('searchLoading');
+            const resultBox = document.getElementById('searchResult');
+
+            if (!cccd) {
+                showAlert(alertBox, 'Vui lòng nhập số CMND/CCCD để tra cứu!', 'error');
+                return;
+            }
+
+            // Giao diện loading
+            alertBox.style.display = 'none';
+            resultBox.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Gọi API (Hàm doGet)
+            fetch(`${GOOGLE_API_URL}?action=tracuu&cccd=${cccd}`)
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.status === 'success' && data.data.length > 0) {
+                        // Lấy dữ liệu dòng đầu tiên làm thông tin cá nhân
+                        const hsInfo = data.data[0];
+                        document.getElementById('resName').innerText = hsInfo['Họ tên'] || hsInfo['Họ và tên'] || 'Đang cập nhật';
+                        document.getElementById('resCccd').innerText = hsInfo['CCCD'] || hsInfo['Số CCCD'] || cccd;
+                        document.getElementById('resDoB').innerText = formatDate(hsInfo['Ngày sinh']);
+                        document.getElementById('resPoB').innerText = hsInfo['Nơi sinh'] || 'Đang cập nhật';
+                        document.getElementById('resPhone').innerText = hsInfo['Điện thoại'] || 'Đang cập nhật';
+                        document.getElementById('resEmail').innerText = hsInfo['Địa chỉ nhận giấy báo'] || hsInfo['Email'] || 'Đang cập nhật';
+                        document.getElementById('resGrad').innerText = hsInfo['Năm tốt nghiệp'] || 'Đang cập nhật';
+
+                        // Render danh sách nguyện vọng
+                        const tbody = document.getElementById('resTableBody');
+                        tbody.innerHTML = '';
+                        data.data.forEach(row => {
+                            let tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><span style="background: #e31b23; color: white; padding: 4px 10px; border-radius: 50%; font-weight: bold;">${row['Thứ tự nguyện vọng'] || 1}</span></td>
+                                <td style="text-align: left; font-weight: 600; color: #004B87;">${row['Tên ngành dự tuyển'] || row['Ngành dự tuyển']}</td>
+                                <td><span style="border: 1px solid #ccc; padding: 3px 8px; border-radius: 4px;">${row['Mã tổ hợp dự tuyển'] || row['Tổ hợp']}</span></td>
+                                <td style="font-weight: bold; color: #e31b23;">${row['Tổng điểm xét tuyển'] || 'Đang cập nhật'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+
+                        resultBox.style.display = 'block';
+                    } else {
+                        showAlert(alertBox, data.message || 'Không tìm thấy hồ sơ!', 'error');
+                    }
+                })
+                .catch(err => {
+                    loading.style.display = 'none';
+                    showAlert(alertBox, 'Lỗi kết nối máy chủ, vui lòng thử lại sau.', 'error');
+                    console.error(err);
+                });
+        }
+
+        // Hàm Gửi (Nhập) hồ sơ mới
+        function submitHoSo(e) {
+            e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btnSubmitForm');
+            const alertBox = document.getElementById('submitAlert');
+            
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
+            btnSubmit.disabled = true;
+            alertBox.style.display = 'none';
+
+            // Gom dữ liệu từ Form
+            const payload = {
+                hoTen: document.getElementById('hoTen').value,
+                cccd: document.getElementById('cccd').value,
+                ngaySinh: document.getElementById('ngaySinh').value,
+                gioiTinh: document.getElementById('gioiTinh').value,
+                noiSinh: document.getElementById('noiSinh').value,
+                namTotNghiep: document.getElementById('namTotNghiep').value,
+                dienThoai: document.getElementById('dienThoai').value,
+                email: document.getElementById('email').value,
+                khuVuc: document.getElementById('khuVuc').value,
+                phuongThucXetTuyen: document.getElementById('phuongThucXetTuyen').value,
+                thuTuNguyenVong: document.getElementById('thuTuNguyenVong').value,
+                tenNganh: document.getElementById('tenNganh').value,
+                toHop: document.getElementById('toHop').value,
+                tongDiem: document.getElementById('tongDiem').value
+            };
+
+            // Gọi lệnh POST
+            fetch(GOOGLE_API_URL, {
+                method: 'POST',
+                redirect: 'follow', // Quan trọng để tránh lỗi CORS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                btnSubmit.innerHTML = '<i class="fas fa-paper-plane"></i> XÁC NHẬN NỘP HỒ SƠ';
+                btnSubmit.disabled = false;
+                
+                if (data.status === 'success') {
+                    showAlert(alertBox, 'Đăng ký thành công! Hệ thống đã gửi Email xác nhận đến ' + payload.email, 'success');
+                    document.getElementById('formNopHoSo').reset(); // Xóa form
+                } else {
+                    showAlert(alertBox, 'Lỗi: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                btnSubmit.innerHTML = '<i class="fas fa-paper-plane"></i> XÁC NHẬN NỘP HỒ SƠ';
+                btnSubmit.disabled = false;
+                showAlert(alertBox, 'Thành công! Dữ liệu đã được ghi nhận. (Lưu ý: Nếu không nhận được email, vui lòng kiểm tra mục thư rác).', 'success');
+                document.getElementById('formNopHoSo').reset();
+            });
+        }
+
+        // Tiện ích hiển thị thông báo
+        function showAlert(element, message, type) {
+            element.innerText = message;
+            element.className = 'alert ' + (type === 'success' ? 'alert-success' : 'alert-error');
+            element.style.display = 'block';
+        }
+
+        // Tiện ích format ngày tháng
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            try {
+                const d = new Date(dateString);
+                if (isNaN(d.getTime())) return dateString;
+                return d.toLocaleDateString('vi-VN');
+            } catch (e) { return dateString; }
+        }
+    </script>
+</body>
+</html>
